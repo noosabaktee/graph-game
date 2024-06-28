@@ -38,8 +38,8 @@ class Scene extends Phaser.Scene
 
     create ()
     {
-        const player_pos = [-20,-200]
-        const enemy_pos = [450,-100]
+        const player_pos = [0,0]
+        const enemy_pos = [[10,100],[100,100]]
 
         const graphics = this.add.graphics();
         // cartesian
@@ -52,8 +52,13 @@ class Scene extends Phaser.Scene
         graphics.closePath();
 
         const player = this.add.rectangle((width/2)+player_pos[0], (height/2)+(player_pos[1])*(-1), size, size, 0x0).setOrigin(.5, .5)
-        const enemy = this.add.rectangle((width/2)+enemy_pos[0], (height/2)+(enemy_pos[1])*(-1), size, size, 0x0).setOrigin(.5, .5)
+        let enemies = {} 
         
+        enemy_pos.forEach((items,i) => {
+            let enemy = this.add.rectangle((width/2)+items[0], (height/2)+(items[1])*(-1), size, size, 0x0).setOrigin(.5, .5)
+            enemies[i] = enemy
+        });
+
         const input = document.getElementById("input")
         const shoot_btn = document.getElementById("shoot-btn")
         const restart_btn = document.getElementById("restart-btn")
@@ -80,14 +85,16 @@ class Scene extends Phaser.Scene
                 scaleX:{from:0, to:length},
                 ease: 'Power0',
                 onUpdated: () => {
-                    if((line.x + line.scaleX >= enemy.x &&
-                        line.x <= enemy.x + enemy.scaleX && 
-                        line.y + line.scaleY >= enemy.y &&
-                        line.y <= enemy.y + enemy.scaleY)){
-                            enemy.destroy()
-                            this.scene.pause()
-                            restart(1000)
-                            console.log("Damn!!!")
+                    for (const [key, enemy] of Object.entries(enemies)) {
+                        if((line.x + line.scaleX >= enemy.x &&
+                            line.x <= enemy.x + enemy.scaleX && 
+                            line.y + line.scaleY >= enemy.y &&
+                            line.y <= enemy.y + enemy.scaleY)){
+                                enemy.destroy()
+                                this.scene.pause()
+                                restart(1000)
+                                console.log("Damn!!!")
+                        }
                     }
                 },
                 onComplete: ()=> {
@@ -104,7 +111,7 @@ class Scene extends Phaser.Scene
             e.preventDefault()
             try{
                 const val = input.value
-                const res = calculate(val,width,height,player_pos[0],enemy_pos[0])
+                const res = calculate(val,width,height,player_pos[0]+1,enemy_pos[0][0]+1)
                 restart_btn.disabled = false
                 input.disabled = true
                 shoot_btn.disabled = true
