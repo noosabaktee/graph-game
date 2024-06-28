@@ -38,8 +38,8 @@ class Scene extends Phaser.Scene
 
     create ()
     {
-        const player_pos = [0,0]
-        const enemy_pos = [100,-100]
+        const player_pos = [-20,-200]
+        const enemy_pos = [450,-100]
 
         const graphics = this.add.graphics();
         // cartesian
@@ -69,10 +69,6 @@ class Scene extends Phaser.Scene
         }
 
         let shoot = (x1,y1,x2,y2,arr,pos) =>{
-            if(pos+1 > arr.length && arr.length > 1) {
-                restart(1000)
-                return false;
-            }
             let [length,angle] = pytha(x1,y1,x2,y2)
             length = x1 <= x2 ? length : -length;
             angle = x1 <= x2 && y1 <= y2 ? -angle : angle;
@@ -84,19 +80,23 @@ class Scene extends Phaser.Scene
                 scaleX:{from:0, to:length},
                 ease: 'Power0',
                 onUpdated: () => {
-                    if(line.x + line.scaleX >= enemy.x &&
-                        line.x <= enemy.x + enemy.scaleX){
+                    if((line.x + line.scaleX >= enemy.x &&
+                        line.x <= enemy.x + enemy.scaleX && 
+                        line.y + line.scaleY >= enemy.y &&
+                        line.y <= enemy.y + enemy.scaleY)){
                             enemy.destroy()
                             this.scene.pause()
                             restart(1000)
                             console.log("Damn!!!")
                     }
                 },
-                onComplete: ()=> shoot(arr[pos-1][0],arr[pos-1][1],arr[pos][0],arr[pos][1],arr,pos+1)
-            });
-            this.physics.add.collider(line, enemy, (l, e) => {
-                e.destroy()
-                console.log("masuk")
+                onComplete: ()=> {
+                    if(pos >= arr.length) {
+                        restart(1000)
+                        return false;
+                    }
+                    shoot(arr[pos-1][0],arr[pos-1][1],arr[pos][0],arr[pos][1],arr,pos+1)
+                }
             });
         }
 
@@ -111,7 +111,7 @@ class Scene extends Phaser.Scene
                 this.tween = this.tweens.add({
                     targets: player,
                     duration: 1000,
-                    angle:{from:0, to:pytha(player_pos[0],player_pos[1],enemy_pos[0],enemy_pos[1])[1]},
+                    angle:{from:0, to:pytha(player_pos[0],player_pos[1],res[0][0],res[0][1])[1]},
                     ease: 'Power0',
                     onStart: () => {console.log('Rotating!')},
                     onComplete: ()=> {
