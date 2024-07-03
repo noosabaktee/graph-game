@@ -30,6 +30,8 @@ function pytha(x1,y1,x2,y2){
     return [r,angle]
 }
 
+console.log(pytha(104,104,50,125)[0])
+
 class Scene extends Phaser.Scene
 {
     preload ()
@@ -40,7 +42,8 @@ class Scene extends Phaser.Scene
     create ()
     {
         const player_pos = [0,0]
-        const enemy_pos = [[1.7,3],[5.2,5.2]]
+        // const enemy_pos = [[1.7,3],[5.2,5.2]]
+        const enemy_pos = [[1.7,3]]
         let distance = 0
 
         const graphics = this.add.graphics();
@@ -56,6 +59,7 @@ class Scene extends Phaser.Scene
         const player = this.add.rectangle((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, size, size, 0x0).setOrigin(.5, .5)
         const bullet = this.add.rectangle((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, size, size, 0x0).setOrigin(.5, .5)
         let enemies = {} 
+
         
         enemy_pos.forEach((items,i) => {
             let enemy = this.add.rectangle((width/2)+items[0]*step, (height/2)+(items[1])*(-1)*step, size, size, 0x0).setOrigin(.5, .5)
@@ -88,26 +92,29 @@ class Scene extends Phaser.Scene
             angle = x1 >= x2 && y1 >= y2 ? -angle : angle;
             let line = this.add.rectangle((width/2)+x1, (height/2)+(y1)*(-1)+distance, 1, 1, 0x0).setOrigin(0, .5).setAngle(angle);
             
-            bullet.rotation = angle
+            // bullet.rotation = angle
+            bullet.moveTo(x2,y2)
 
-            const coords = {x: 1} 
+            const coords = {x: 0} 
             const tween = new TWEEN.Tween(coords, false) 
-                .to({x: length}, length) 
+                .to({x: length}, 1000) 
                 .easing(TWEEN.Easing.Quadratic.InOut)
                 .onUpdate((c) => {
                     line.scaleX = c.x
-                    bullet.x += c.x
-                    for (const [key, enemy] of Object.entries(enemies)) {
-                        if((c.x + line.scaleX >= enemy.x &&
-                            c.x <= enemy.x + enemy.scaleX) && 
-                            (line.y + line.scaleY >= enemy.y &&
-                            line.y <= enemy.y + enemy.scaleY)){
-                                enemy.destroy()
-                                this.scene.pause()
-                                restart(1000)
-                                console.log("Damn!!!")
-                        }
-                    }
+                    // bullet.x += c.x
+                    // console.log(math.abs(pytha(x1,y1,enemy_pos[1][0]*step,enemy_pos[1][1]*step)[0] - c.x) <= 10)
+                    // for (const [key, enemy] of Object.entries(enemies)) {
+                    //     // let dis = math.abs(pytha(enemy.x-(width/2),(enemy.y-(height/2))*(-1),x1,y1)[0] - c.x)
+                    //     // dis = math.abs(y1-enemy.y) <= 10 ? x : dis  
+                    //     console.log(math.abs(pytha(enemy.x-(width/2),(enemy.y-(height/2))*(-1),x1,y1)[0]), enemy.x-(width/2),(enemy.y-(height/2))*(-1),x1,y1)
+                    //     // if(math.abs(pytha(enemy.x-(width/2),(enemy.y-(height/2))*(-1),x1,y1)[0] - c.x) <= 3){
+                    //     //         enemy.destroy()
+                    //     //         this.scene.pause()
+                    //     //         restart(1000)
+                    //     //         console.log("Damn!!!")
+                    //     //         break;
+                    //     // }
+                    // }
                 })
                 .onComplete(() => {
                     if((math.abs(line.x)-width/2 > width/2 || math.abs(line.y)-height/2 > height/2) ||
@@ -166,6 +173,7 @@ class Scene extends Phaser.Scene
                 const val = input.value
                 const res = calculate(val,width,height,player_pos[0],enemy_pos[0][0])
                 res.unshift([player_pos[0],player_pos[1]])
+                console.log(res)
                 distance = math.abs(player_pos[1]*step - res[1][1]*step)
                 distance = res[1][1] > player_pos[1] ? distance : -distance
                 restart_btn.disabled = false
@@ -202,7 +210,13 @@ const config = {
     width: window.innerWidth - 50,
     height: window.innerHeight - 50,
     backgroundColor: '#c1d0b5',
-    scene: Scene
+    scene: Scene,
+    physics: {
+        default: "arcade",
+        arcade: {
+            debug: true
+        }
+    },
 };
 
 const game = new Phaser.Game(config);
