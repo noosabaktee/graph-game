@@ -1,6 +1,6 @@
 const width = window.innerWidth - 50
 const height = window.innerHeight - 50
-const size = 10/220
+const size = 10
 const step = 20
 
 function calculate(eq,width,height,start,end){
@@ -30,20 +30,19 @@ function pytha(x1,y1,x2,y2){
     return [r,angle]
 }
 
-console.log(pytha(104,104,50,125)[0])
 
 class Scene extends Phaser.Scene
 {
     preload ()
     {
-        this.load.image("rectangle", "black.png");
+        
     }
 
     create ()
     {
         const player_pos = [0,0]
-        // const enemy_pos = [[1.7,3],[5.2,5.2]]
-        const enemy_pos = [[1.7,3]]
+        const enemy_pos = [[1.7,3],[5.2,5.2]]
+        // const enemy_pos = [[1.7,3]]
         let distance = 0
 
         const graphics = this.add.graphics();
@@ -56,13 +55,13 @@ class Scene extends Phaser.Scene
         graphics.strokePath();
         graphics.closePath();
 
-        const player = this.physics.add.sprite((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, "rectangle").setOrigin(.5, .5).setScale(size)
-        const bullet = this.physics.add.sprite((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, "rectangle").setOrigin(.5, .5).setScale(size)
-        let enemies = {} 
+        const player = this.add.rectangle((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, size, size, 0x0).setOrigin(.5, .5)
+        const bullet = this.add.rectangle((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, size, size, 0x0).setOrigin(.5, .5)
+        bullet.alpha = 0
 
-        
+        let enemies = {} 
         enemy_pos.forEach((items,i) => {
-            let enemy = this.physics.add.sprite((width/2)+items[0]*step, (height/2)+(items[1])*(-1)*step, "rectangle").setOrigin(.5, .5).setScale(size)
+            let enemy = this.add.rectangle((width/2)+items[0]*step, (height/2)+(items[1])*(-1)*step, size, size, 0x0).setOrigin(.5, .5)
             enemies[i] = enemy
         });
 
@@ -90,32 +89,27 @@ class Scene extends Phaser.Scene
             length = x1 <= x2 ? length : -length;
             angle = x1 <= x2 && y1 <= y2 ? -angle : angle;
             angle = x1 >= x2 && y1 >= y2 ? -angle : angle;
-            let line = this.physics.add.sprite((width/2)+x1, (height/2)+(y1)*(-1)+distance, "rectangle").setOrigin(0, .5).setScale(size/4).setAngle(angle);
-            console.log(line.body)
-            line.body.angle = angle
-            // line.body.setAngularVelocity(angle)
-            // bullet.rotation = angle
-            // bullet.moveTo(x2,y2)
-
-            const coords = {x: 0} 
+            let line = this.add.rectangle((width/2)+x1, (height/2)+(y1)*(-1)+distance, 1, 1, 0x0).setOrigin(0, .5).setAngle(angle)
+        
+            const coords = {x: (width/2)+x1,y: (height/2)+(y1)*(-1)+distance, len:0} 
             const tween = new TWEEN.Tween(coords, false) 
-                .to({x: length}, length) 
+                .to({x: (width/2)+x2, y: (height/2)+(y2)*(-1)+distance, len: length}, length) 
                 .easing(TWEEN.Easing.Quadratic.InOut)
                 .onUpdate((c) => {
-                    line.setScale((c.x/220),size/4)
-                    // bullet.x += c.x
-                    // console.log(math.abs(pytha(x1,y1,enemy_pos[1][0]*step,enemy_pos[1][1]*step)[0] - c.x) <= 10)
+                    line.scaleX = c.len
+                    bullet.x = c.x
+                    bullet.y = c.y
                     for (const [key, enemy] of Object.entries(enemies)) {
-                        this.physics.add.collider(line, enemy, (l,e) => {
-                            console.log("kena")
-                        })
-                        // if(math.abs(pytha(enemy.x-(width/2),(enemy.y-(height/2))*(-1),x1,y1)[0] - c.x) <= 3){
-                        //         enemy.destroy()
-                        //         this.scene.pause()
-                        //         restart(1000)
-                        //         console.log("Damn!!!")
-                        //         break;
-                        // }
+                        if((bullet.x + bullet.scaleX*size >= enemy.x &&
+                            bullet.x <= enemy.x + enemy.scaleX*size) && 
+                            (bullet.y + bullet.scaleY*size >= enemy.y &&
+                            bullet.y <= enemy.y + enemy.scaleY*size)){
+                                enemy.destroy()
+                                this.scene.pause()
+                                restart(1000)
+                                console.log("Damn!!!")
+                                break;
+                        }
                     }
                 })
                 .onComplete(() => {
@@ -135,38 +129,6 @@ class Scene extends Phaser.Scene
                 requestAnimationFrame(animate)
             }
             requestAnimationFrame(animate)
-
-            // const coords = {x: 1} 
-            // this.tween = this.tweens.add({
-            //     targets: coords,
-            //     duration: length,
-            //     x:length,
-            //     ease: 'Power0',
-            //     onUpdated: () => {
-            //         line.scaleX += coords.x
-            //         // line.scaleX = a.x
-            //         // for (const [key, enemy] of Object.entries(enemies)) {
-            //         //     if((line.x + line.scaleX >= enemy.x &&
-            //         //         line.x <= enemy.x + enemy.scaleX) && 
-            //         //         (line.y + line.scaleY >= enemy.y &&
-            //         //         line.y <= enemy.y + enemy.scaleY)){
-            //         //             enemy.destroy()
-            //         //             this.scene.pause()
-            //         //             restart(1000)
-            //         //             console.log("Damn!!!")
-            //         //     }
-            //         // }
-            //     },
-            //     onComplete: ()=> {
-            //         if((math.abs(line.x)-width/2 > width/2 || math.abs(line.y)-height/2 > height/2) ||
-            //             (pos+2 >= arr.length)){
-            //             this.scene.pause()
-            //             restart(1000)
-            //             return false
-            //         }
-            //         shoot(arr,pos+1)
-            //     }
-            // });
         }
 
         form.addEventListener("submit", (e) => {
@@ -183,8 +145,8 @@ class Scene extends Phaser.Scene
                 shoot_btn.disabled = true
                 this.tween = this.tweens.add({
                     targets: player,
-                    duration: 1000,
-                    angle:{from:0, to:pytha(player_pos[0],player_pos[1],res[1][0],res[1][1])[1]},
+                    duration: 500,
+                    angle:{from:0, to:pytha(player_pos[0],player_pos[1],res[2][0],res[2][1])[1]},
                     ease: 'Power0',
                     onStart: () => {console.log('Rotating!')},
                     onComplete: ()=> {
@@ -213,12 +175,6 @@ const config = {
     height: window.innerHeight - 50,
     backgroundColor: '#c1d0b5',
     scene: Scene,
-    physics: {
-        default: "arcade",
-        arcade: {
-            debug: true
-        }
-    },
 };
 
 const game = new Phaser.Game(config);
