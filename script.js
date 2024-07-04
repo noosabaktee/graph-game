@@ -94,8 +94,7 @@ class Scene extends Phaser.Scene
                 .to({x: (width/2)+x2, y: (height/2)+(y2)*(-1)+distance, len: length}, length) 
                 .easing(TWEEN.Easing.Quadratic.InOut)
                 .onUpdate((c) => {
-                    graphics.lineStyle(2, 0x0, 1);
-                    graphics.moveTo((width/2)+x1, (height/2)+(y1)*(-1));
+                    graphics.moveTo((width/2)+x1, (height/2)+(y1)*(-1)+distance);
                     graphics.lineTo(c.x, c.y);
                     graphics.strokePath();
                     graphics.closePath();
