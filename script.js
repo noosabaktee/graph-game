@@ -47,7 +47,7 @@ class Scene extends Phaser.Scene
 
         const graphics = this.add.graphics();
         // cartesian
-        graphics.lineStyle(2, 0x0, 0.5);
+        graphics.lineStyle(2, 0x0, 1);
         graphics.moveTo(width/2, 0);
         graphics.lineTo(width/2, height);
         graphics.moveTo(0, height/2);
@@ -89,14 +89,16 @@ class Scene extends Phaser.Scene
             length = x1 <= x2 ? length : -length;
             angle = x1 <= x2 && y1 <= y2 ? -angle : angle;
             angle = x1 >= x2 && y1 >= y2 ? -angle : angle;
-            let line = this.add.rectangle((width/2)+x1, (height/2)+(y1)*(-1)+distance, 1, 1, 0x0).setOrigin(0, .5).setAngle(angle)
-        
             const coords = {x: (width/2)+x1,y: (height/2)+(y1)*(-1)+distance, len:0} 
             const tween = new TWEEN.Tween(coords, false) 
                 .to({x: (width/2)+x2, y: (height/2)+(y2)*(-1)+distance, len: length}, length) 
                 .easing(TWEEN.Easing.Quadratic.InOut)
                 .onUpdate((c) => {
-                    line.scaleX = c.len
+                    graphics.lineStyle(2, 0x0, 1);
+                    graphics.moveTo((width/2)+x1, (height/2)+(y1)*(-1));
+                    graphics.lineTo(c.x, c.y);
+                    graphics.strokePath();
+                    graphics.closePath();
                     bullet.x = c.x
                     bullet.y = c.y
                     for (const [key, enemy] of Object.entries(enemies)) {
@@ -107,13 +109,15 @@ class Scene extends Phaser.Scene
                                 enemy.destroy()
                                 this.scene.pause()
                                 restart(1000)
-                                console.log("Damn!!!")
-                                break;
+                                this.add.text( enemy.x, enemy.y, "Damn!!")
+                                .setFont("20px Arial")
+                                .setColor('#000000');
+                                return false
                         }
                     }
                 })
                 .onComplete(() => {
-                    if((math.abs(line.x)-width/2 > width/2 || math.abs(line.y)-height/2 > height/2) ||
+                    if((math.abs(bullet.x)-width/2 > width/2 || math.abs(bullet.y)-height/2 > height/2) ||
                         (pos+2 >= arr.length)){
                         this.scene.pause()
                         restart(1000)
