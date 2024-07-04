@@ -1,6 +1,6 @@
 const width = window.innerWidth - 50
 const height = window.innerHeight - 50
-const size = 10
+const size = 10/220
 const step = 20
 
 function calculate(eq,width,height,start,end){
@@ -36,7 +36,7 @@ class Scene extends Phaser.Scene
 {
     preload ()
     {
-        
+        this.load.image("rectangle", "black.png");
     }
 
     create ()
@@ -56,13 +56,13 @@ class Scene extends Phaser.Scene
         graphics.strokePath();
         graphics.closePath();
 
-        const player = this.add.rectangle((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, size, size, 0x0).setOrigin(.5, .5)
-        const bullet = this.add.rectangle((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, size, size, 0x0).setOrigin(.5, .5)
+        const player = this.physics.add.sprite((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, "rectangle").setOrigin(.5, .5).setScale(size)
+        const bullet = this.physics.add.sprite((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, "rectangle").setOrigin(.5, .5).setScale(size)
         let enemies = {} 
 
         
         enemy_pos.forEach((items,i) => {
-            let enemy = this.add.rectangle((width/2)+items[0]*step, (height/2)+(items[1])*(-1)*step, size, size, 0x0).setOrigin(.5, .5)
+            let enemy = this.physics.add.sprite((width/2)+items[0]*step, (height/2)+(items[1])*(-1)*step, "rectangle").setOrigin(.5, .5).setScale(size)
             enemies[i] = enemy
         });
 
@@ -90,31 +90,33 @@ class Scene extends Phaser.Scene
             length = x1 <= x2 ? length : -length;
             angle = x1 <= x2 && y1 <= y2 ? -angle : angle;
             angle = x1 >= x2 && y1 >= y2 ? -angle : angle;
-            let line = this.add.rectangle((width/2)+x1, (height/2)+(y1)*(-1)+distance, 1, 1, 0x0).setOrigin(0, .5).setAngle(angle);
-            
+            let line = this.physics.add.sprite((width/2)+x1, (height/2)+(y1)*(-1)+distance, "rectangle").setOrigin(0, .5).setScale(size/4).setAngle(angle);
+            console.log(line.body)
+            line.body.angle = angle
+            // line.body.setAngularVelocity(angle)
             // bullet.rotation = angle
-            bullet.moveTo(x2,y2)
+            // bullet.moveTo(x2,y2)
 
             const coords = {x: 0} 
             const tween = new TWEEN.Tween(coords, false) 
-                .to({x: length}, 1000) 
+                .to({x: length}, length) 
                 .easing(TWEEN.Easing.Quadratic.InOut)
                 .onUpdate((c) => {
-                    line.scaleX = c.x
+                    line.setScale((c.x/220),size/4)
                     // bullet.x += c.x
                     // console.log(math.abs(pytha(x1,y1,enemy_pos[1][0]*step,enemy_pos[1][1]*step)[0] - c.x) <= 10)
-                    // for (const [key, enemy] of Object.entries(enemies)) {
-                    //     // let dis = math.abs(pytha(enemy.x-(width/2),(enemy.y-(height/2))*(-1),x1,y1)[0] - c.x)
-                    //     // dis = math.abs(y1-enemy.y) <= 10 ? x : dis  
-                    //     console.log(math.abs(pytha(enemy.x-(width/2),(enemy.y-(height/2))*(-1),x1,y1)[0]), enemy.x-(width/2),(enemy.y-(height/2))*(-1),x1,y1)
-                    //     // if(math.abs(pytha(enemy.x-(width/2),(enemy.y-(height/2))*(-1),x1,y1)[0] - c.x) <= 3){
-                    //     //         enemy.destroy()
-                    //     //         this.scene.pause()
-                    //     //         restart(1000)
-                    //     //         console.log("Damn!!!")
-                    //     //         break;
-                    //     // }
-                    // }
+                    for (const [key, enemy] of Object.entries(enemies)) {
+                        this.physics.add.collider(line, enemy, (l,e) => {
+                            console.log("kena")
+                        })
+                        // if(math.abs(pytha(enemy.x-(width/2),(enemy.y-(height/2))*(-1),x1,y1)[0] - c.x) <= 3){
+                        //         enemy.destroy()
+                        //         this.scene.pause()
+                        //         restart(1000)
+                        //         console.log("Damn!!!")
+                        //         break;
+                        // }
+                    }
                 })
                 .onComplete(() => {
                     if((math.abs(line.x)-width/2 > width/2 || math.abs(line.y)-height/2 > height/2) ||
