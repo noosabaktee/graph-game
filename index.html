@@ -15,10 +15,21 @@
         y = <input id="input" type="text" required/>
         <button id="shoot-btn">shoot</button>
     </form>
+    <div id="panel">
+        <button id="close" onclick="showClosePanel()">close</button>
+        <div id="options">
+            <button class="option select-option" onclick="option(this)">Player</button>
+            <button class="option" onclick="option(this)">Target</button>
+        </div>
+        <div id="shop-content"></div>
+    </div>
     <div id="board">
-        <button id="buy">buy</button>
-        <span>score: <span id="score"></span></span>
+        <button id="buy" onclick="showClosePanel()">buy</button>
+        <span>point: <span id="point"></span></span>
     </div>
     <script src="script.js"></script>
+    <script>
+        function showClosePanel(el){document.getElementById('panel').classList.toggle('hide')}
+    </script>
 </body>
 </html>

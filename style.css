@@ -2,8 +2,68 @@
     display: inline;
 }
 
+#panel{
+    margin: 0;
+    width: 80%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    background-color: #8b6969;
+    border-radius: 10px;
+}
+
+#panel #close{
+    position: absolute;
+    right: -20px;
+    top: -10px;
+}
+
+.hide{
+    display: none;
+}
+
+#options{
+    display: flex;
+}
+
+#panel .option{
+    width: 50%;
+    display: inline;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.select-option{
+    background-color: #8b6969;
+}
+
+#shop-content{
+    padding: 20px;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.shop-list{
+    margin: 0px 12px;
+    display: inline-block;
+}
+
+.shop-list span{
+    float: left;
+    width: 100%;
+    text-align: center;
+}
+
+.shop-list button{
+    width: 100%;
+}
+
 @media only screen and (min-width: 600px) {
     #board{
         float: right;
     }
 }
+

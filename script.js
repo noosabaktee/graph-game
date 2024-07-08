@@ -14,42 +14,45 @@ let start = player_pos[0]
 let end = enemy_pos[0][0]
 let player,bullet
 let enemies = {} 
+let select_option = "Player"
 
-function calculate(eq,width){
-    const dh = math.parse(eq)
-    let y = []
-    let i=start;
-    while(math.abs(i)<width/2){
-        const res = dh.evaluate({ x: i })
-        if(res == Infinity) break; y.push([i,res])
-        if(start < end){
-            i+=0.5;
-        }else{
-            i-=0.5;
-        }
-        if(math.abs(res)*step > width && y.length >= 2){
-            break;
-        }
-    }
-    return y
+let player_prices = {
+    1: 2000, 2:2000, 3:2000, 4: 2000, 5:2000, 6:3000, 7:3000, 8:3000, 9:3500, 10:3500,
+    11: 4000, 12:4000, 13:5000, 14: 5000, 15:5500, 16:6000, 17:7000, 18:8000, 19:9000, 20:10000,
 }
 
-function pytha(x1,y1,x2,y2){
-    let x = math.abs(x2-x1)
-    let y = math.abs(y2-y1)
-    let r = math.sqrt(x**2 + y**2)
-    let angle = math.asin(y/r)*(180/math.pi)
-    return [r,angle]
+let target_prices = {
+    1:{price: 2000, increase: 20}, 
+    2:{price: 2000, increase: 20}, 
+    3:{price: 2000, increase: 20}, 
+    4:{price: 3000, increase: 30}, 
+    5:{price: 3000, increase: 30}, 
+    6:{price: 3500, increase: 40}, 
+    7:{price: 3500, increase: 40}, 
+    8:{price: 3500, increase: 40}, 
+    9:{price: 4500, increase: 50}, 
+    10:{price: 5000, increase: 65},
+    11:{price: 5000, increase: 65}, 
+    12:{price: 6500, increase: 80}, 
+    13:{price: 8000, increase: 80}, 
+    14:{price: 10000, increase: 95}, 
+    15:{price: 14000, increase: 100}, 
+    16:{price: 16000, increase: 120}, 
+    17:{price: 17500, increase: 135}, 
+    18:{price: 19000, increase: 150}, 
+    19:{price: 21000, increase: 180}, 
+    20:{price: 25000, increase: 200},
 }
 
 const input = document.getElementById("input")
 const shoot_btn = document.getElementById("shoot-btn")
 const form = document.getElementById("form")
 const buy = document.getElementById("buy")
-const score = document.getElementById("score")
+const point = document.getElementById("point")
+const shop_content = document.getElementById("shop-content")
 
-if (localStorage.getItem("score") == null) localStorage.setItem("score",0)
-score.innerHTML = localStorage.getItem("score")
+if (localStorage.getItem("point") == null) localStorage.setItem("point",0)
+point.innerHTML = localStorage.getItem("point")
 
 let distance = 0
 let shoot = (arr,pos) => {}
@@ -133,7 +136,7 @@ class Scene extends Phaser.Scene
                             (enemy.scene != undefined)){       
                                 enemy_pos[key] = null 
                                 enemy.destroy()
-                                updateScore(10)
+                                updatePoint(10)
                                 this.add.text(enemy.x, enemy.y, "Damn!!")
                                 .setFont("15px Arial")
                                 .setColor('#000000');
@@ -181,11 +184,66 @@ form.addEventListener("submit", (e) => {
     }
 })
 
-function updateScore(add){
-    let last_score = localStorage.getItem("score")
-    let new_score = parseInt(last_score)+add
-    localStorage.setItem("score",new_score)
-    score.innerHTML = new_score
+let updatePoint = (add) => {
+    let last_point = localStorage.getItem("point")
+    let new_point = parseInt(last_point)+add
+    localStorage.setItem("point",new_point)
+    point.innerHTML = new_point
+}
+
+let option = (el) => {
+    let last_select = document.getElementsByClassName('select-option')[0]
+    last_select.classList.toggle('select-option')
+    el.classList.toggle("select-option");
+    select_option = el.innerHTML
+    showShop(select_option)
+}
+
+let showShop = (option) => {
+    let new_element = ""
+    let dir = option == "Player" ? "animal" : "fruit"
+    let size = option == "Player" ? 72 : 56
+    for(let i = 1;i<=20;i++){
+        new_element += `<div class="shop-list">`
+        new_element += `<img src="img/${dir}/${i}.svg" width="${size}"/><br>`
+        if(option == 'Player') new_element += `<span>price: ${player_prices[i]}</span><br>`
+        else {
+            new_element += `<span>price: ${target_prices[i].price}</span><br>`
+            new_element += `<span>+${target_prices[i].increase} point</span><br>`      
+        } 
+        new_element += `<button onclick="">buy</button>`
+        new_element += '</div>'
+        if(i == 10) new_element += '<br><br>'
+    }
+    shop_content.innerHTML = new_element
+}
+showShop(select_option)
+
+function calculate(eq,width){
+    const dh = math.parse(eq)
+    let y = []
+    let i=start;
+    while(math.abs(i)<width/2){
+        const res = dh.evaluate({ x: i })
+        if(res == Infinity) break; y.push([i,res])
+        if(start < end){
+            i+=0.5;
+        }else{
+            i-=0.5;
+        }
+        if(math.abs(res)*step > width && y.length >= 2){
+            break;
+        }
+    }
+    return y
+}
+
+function pytha(x1,y1,x2,y2){
+    let x = math.abs(x2-x1)
+    let y = math.abs(y2-y1)
+    let r = math.sqrt(x**2 + y**2)
+    let angle = math.asin(y/r)*(180/math.pi)
+    return [r,angle]
 }
 
 const config = {
