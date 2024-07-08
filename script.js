@@ -3,7 +3,9 @@ let height = window.innerHeight - 50
 if(width <= height){
     height = width
 }
-const size = 10
+const size_bullet = 10
+const size_enemy = 10/200
+const size_player = 10/64
 const step = 20
 
 const player_pos = [-2,-2]
@@ -43,16 +45,25 @@ function pytha(x1,y1,x2,y2){
 const input = document.getElementById("input")
 const shoot_btn = document.getElementById("shoot-btn")
 const form = document.getElementById("form")
+const buy = document.getElementById("buy")
+const score = document.getElementById("score")
 
-// const enemy_pos = [[1.7,3]]
+if (localStorage.getItem("score") == null) localStorage.setItem("score",0)
+score.innerHTML = localStorage.getItem("score")
+
 let distance = 0
 let shoot = (arr,pos) => {}
 let restart = () => {}
+
+
 class Scene extends Phaser.Scene
 {
     preload ()
     {
-        
+        for(let i = 1;i<=20;i++){
+            this.load.image(`animal-${i}`, `img/animal/${i}.svg`)
+            this.load.image(`fruit-${i}`, `img/fruit/${i}.svg`)
+        }
     }
 
     create ()
@@ -67,19 +78,21 @@ class Scene extends Phaser.Scene
         graphics.strokePath();
         graphics.closePath();
 
-        player = this.add.rectangle((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, size, size, 0x0).setOrigin(.5, .5)
-        bullet = this.add.rectangle((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, size, size, 0x0).setOrigin(.5, .5)
+        player = this.add.sprite((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, 'animal-1').setScale(size_player).setOrigin(.5, .5)
+        bullet = this.add.rectangle((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, size_bullet, size_bullet, 0x0).setOrigin(.5, .5)
         bullet.alpha = 0
 
         enemy_pos.forEach((items,i) => {
             if(items != null){
-                let enemy = this.add.rectangle((width/2)+items[0]*step, (height/2)+(items[1])*(-1)*step, size, size, 0x0).setOrigin(.5, .5)
+                let enemy = this.add.sprite((width/2)+items[0]*step, (height/2)+(items[1])*(-1)*step, 'fruit-1').setScale(size_enemy).setOrigin(.5, .5)
                 enemies[i] = enemy
             }
         });
     }
 
     update(){
+        player.depth = 1
+
         const graphics = this.add.graphics();
         graphics.lineStyle(2, 0x0, 1);
 
@@ -101,8 +114,6 @@ class Scene extends Phaser.Scene
             if(arr.length <= 3) arr.push([])
             let [length,angle] = pytha(x1,y1,x2,y2)
             length = x1 <= x2 ? length : -length;
-            angle = x1 <= x2 && y1 <= y2 ? -angle : angle;
-            angle = x1 >= x2 && y1 >= y2 ? -angle : angle;
             const coords = {x: (width/2)+x1,y: (height/2)+(y1)*(-1)+distance, len:0} 
             const tween = new TWEEN.Tween(coords, false) 
                 .to({x: (width/2)+x2, y: (height/2)+(y2)*(-1)+distance, len: length}, length) 
@@ -115,12 +126,14 @@ class Scene extends Phaser.Scene
                     bullet.x = c.x
                     bullet.y = c.y
                     for (const [key, enemy] of Object.entries(enemies)) {
-                        if((bullet.x + bullet.scaleX*size >= enemy.x &&
-                            bullet.x <= enemy.x + enemy.scaleX*size) && 
-                            (bullet.y + bullet.scaleY*size >= enemy.y &&
-                            bullet.y <= enemy.y + enemy.scaleY*size)){       
+                        if((bullet.x + bullet.scaleX+(size_bullet/2+2) >= enemy.x &&
+                            bullet.x <= enemy.x + enemy.scaleX+(size_bullet/2+2)) && 
+                            (bullet.y + bullet.scaleY+(size_bullet/2+2) >= enemy.y &&
+                            bullet.y <= enemy.y + enemy.scaleY+(size_bullet/2+2)) &&
+                            (enemy.scene != undefined)){       
                                 enemy_pos[key] = null 
                                 enemy.destroy()
+                                updateScore(10)
                                 this.add.text(enemy.x, enemy.y, "Damn!!")
                                 .setFont("15px Arial")
                                 .setColor('#000000');
@@ -168,12 +181,19 @@ form.addEventListener("submit", (e) => {
     }
 })
 
+function updateScore(add){
+    let last_score = localStorage.getItem("score")
+    let new_score = parseInt(last_score)+add
+    localStorage.setItem("score",new_score)
+    score.innerHTML = new_score
+}
+
 const config = {
     type: Phaser.AUTO,
     width: width,
     height: height,
     parent: 'game-area',
-    backgroundColor: '#c1d0b5',
+    backgroundColor: '#ffffff',
     scene: Scene,
 };
 
