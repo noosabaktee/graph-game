@@ -12,8 +12,8 @@ const player_pos = [-2,-2]
 let enemy_pos = [[3.4,3],[5.2,5.2]]
 let start = player_pos[0]
 let end = enemy_pos[0][0]
-let player,bullet
 let enemies = {} 
+let player
 let select_option = "Player"
 
 let player_prices = {
@@ -47,11 +47,14 @@ let target_prices = {
 const input = document.getElementById("input")
 const shoot_btn = document.getElementById("shoot-btn")
 const form = document.getElementById("form")
-const buy = document.getElementById("buy")
 const point = document.getElementById("point")
 const shop_content = document.getElementById("shop-content")
 
 if (localStorage.getItem("point") == null) localStorage.setItem("point",0)
+if (localStorage.getItem("player_select") == null) localStorage.setItem("player_select",1)
+if (localStorage.getItem("target_select") == null) localStorage.setItem("target_select",1)
+if (localStorage.getItem("player_unlocked") == null) localStorage.setItem("player_unlocked",JSON.stringify([1]))
+if (localStorage.getItem("target_unlocked") == null) localStorage.setItem("target_unlocked",JSON.stringify([1]))
 point.innerHTML = localStorage.getItem("point")
 
 let distance = 0
@@ -73,7 +76,7 @@ class Scene extends Phaser.Scene
     {
         const graphics = this.add.graphics();
         // cartesian
-        graphics.lineStyle(2, 0x0, 1);
+        graphics.lineStyle(2, 0x0, 0.5);
         graphics.moveTo(width/2, 0);
         graphics.lineTo(width/2, height);
         graphics.moveTo(0, height/2);
@@ -81,13 +84,15 @@ class Scene extends Phaser.Scene
         graphics.strokePath();
         graphics.closePath();
 
-        player = this.add.sprite((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, 'animal-1').setScale(size_player).setOrigin(.5, .5)
-        bullet = this.add.rectangle((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, size_bullet, size_bullet, 0x0).setOrigin(.5, .5)
-        bullet.alpha = 0
+        let player_select = localStorage.getItem('player_select')
+        let target_select = localStorage.getItem('target_select')
+        player = this.add.sprite((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, `animal-${player_select}`).setScale(size_player).setOrigin(.5, .5)
+        this.bullet = this.add.rectangle((width/2)+player_pos[0]*step, (height/2)+(player_pos[1])*(-1)*step, size_bullet, size_bullet, 0x0).setOrigin(.5, .5)
+        this.bullet.alpha = 0
 
         enemy_pos.forEach((items,i) => {
             if(items != null){
-                let enemy = this.add.sprite((width/2)+items[0]*step, (height/2)+(items[1])*(-1)*step, 'fruit-1').setScale(size_enemy).setOrigin(.5, .5)
+                let enemy = this.add.sprite((width/2)+items[0]*step, (height/2)+(items[1])*(-1)*step, `fruit-${target_select}`).setScale(size_enemy).setOrigin(.5, .5)
                 enemies[i] = enemy
             }
         });
@@ -126,23 +131,23 @@ class Scene extends Phaser.Scene
                     graphics.lineTo(c.x, c.y);
                     graphics.strokePath();
                     graphics.closePath();
-                    bullet.x = c.x
-                    bullet.y = c.y
+                    this.bullet.x = c.x
+                    this.bullet.y = c.y
                     for (const [key, enemy] of Object.entries(enemies)) {
-                        if((bullet.x + bullet.scaleX+(size_bullet/2+2) >= enemy.x &&
-                            bullet.x <= enemy.x + enemy.scaleX+(size_bullet/2+2)) && 
-                            (bullet.y + bullet.scaleY+(size_bullet/2+2) >= enemy.y &&
-                            bullet.y <= enemy.y + enemy.scaleY+(size_bullet/2+2)) &&
+                        if((this.bullet.x + this.bullet.scaleX+(size_bullet/2+2) >= enemy.x &&
+                            this.bullet.x <= enemy.x + enemy.scaleX+(size_bullet/2+2)) && 
+                            (this.bullet.y + this.bullet.scaleY+(size_bullet/2+2) >= enemy.y &&
+                            this.bullet.y <= enemy.y + enemy.scaleY+(size_bullet/2+2)) &&
                             (enemy.scene != undefined)){       
                                 enemy_pos[key] = null 
                                 enemy.destroy()
-                                updatePoint(10)
+                                updatePoint()
                                 this.add.text(enemy.x, enemy.y, "Damn!!")
                                 .setFont("15px Arial")
                                 .setColor('#000000');
                         }
                     }
-                    if((math.abs(bullet.x-width/2) > width/2 || math.abs(bullet.y-height/2) > height/2) ||
+                    if((math.abs(this.bullet.x-width/2) > width/2 || math.abs(this.bullet.y-height/2) > height/2) ||
                         (pos+1 >= arr.length)){
                         next = false
                         restart(1000)
@@ -184,9 +189,51 @@ form.addEventListener("submit", (e) => {
     }
 })
 
-let updatePoint = (add) => {
+let buy = (i) => {
+    let point = localStorage.getItem("point")
+    if(select_option == "Player"){
+        let player_unlocked = localStorage.getItem("player_unlocked")
+        player_unlocked = JSON.parse(player_unlocked)
+        if(point >= player_prices[i]){
+            player_unlocked.push(i)
+            localStorage.setItem("player_unlocked",JSON.stringify(player_unlocked))
+            point -= player_prices[i]
+            localStorage.setItem("point", point)
+        }else{
+            console.log("Point is not enough")
+        }
+    }else if(select_option == "Target"){
+        let target_unlocked = localStorage.getItem("target_unlocked")
+        target_unlocked = JSON.parse(target_unlocked)
+        if(point >= target_prices[i].price){
+            target_unlocked.push(i)
+            localStorage.setItem("target_unlocked",JSON.stringify(target_unlocked))
+            point -= target_prices[i].price
+            localStorage.setItem("point", point)
+        }else{
+            console.log("Point is not enough")
+        }
+    }
+    updateShop(select_option)
+}
+
+let select =  (i) => {
+    if(select_option == "Player"){
+        localStorage.setItem("player_select",i)
+        player.setTexture(`animal-${i}`)
+    }else{
+        localStorage.setItem("target_select",i)
+        for (const [key, enemy] of Object.entries(enemies)) {
+            if(enemy.scene != undefined) enemy.setTexture(`fruit-${i}`)
+        }
+    }
+    updateShop(select_option)
+}
+
+let updatePoint = () => {
     let last_point = localStorage.getItem("point")
-    let new_point = parseInt(last_point)+add
+    let target_select = localStorage.getItem("target_select")
+    let new_point = parseInt(last_point)+target_prices[target_select].increase
     localStorage.setItem("point",new_point)
     point.innerHTML = new_point
 }
@@ -196,28 +243,39 @@ let option = (el) => {
     last_select.classList.toggle('select-option')
     el.classList.toggle("select-option");
     select_option = el.innerHTML
-    showShop(select_option)
+    updateShop(select_option)
 }
 
-let showShop = (option) => {
+let updateShop = (option) => {
     let new_element = ""
     let dir = option == "Player" ? "animal" : "fruit"
     let size = option == "Player" ? 72 : 56
+    let player_unlocked = localStorage.getItem("player_unlocked")
+    let target_unlocked = localStorage.getItem("target_unlocked")
     for(let i = 1;i<=20;i++){
         new_element += `<div class="shop-list">`
         new_element += `<img src="img/${dir}/${i}.svg" width="${size}"/><br>`
-        if(option == 'Player') new_element += `<span>price: ${player_prices[i]}</span><br>`
-        else {
+        if(option == 'Player') {
+            new_element += `<span>price: ${player_prices[i]}</span><br>`
+        }else {
             new_element += `<span>price: ${target_prices[i].price}</span><br>`
             new_element += `<span>+${target_prices[i].increase} point</span><br>`      
         } 
-        new_element += `<button onclick="">buy</button>`
+        if(option == 'Player' && player_unlocked.includes(i)){
+            let info = localStorage.getItem("player_select") == i ? "selected" : "select"
+            new_element += `<button onclick="select(${i})">${info}</button>`
+        }else if(option == 'Target' && target_unlocked.includes(i)){
+            let info = localStorage.getItem("target_select") == i ? "selected" : "select"
+            new_element += `<button onclick="select(${i})">${info}</button>`
+        }else{
+            new_element += `<button onclick="buy(${i})">buy</button>`
+        }
         new_element += '</div>'
         if(i == 10) new_element += '<br><br>'
     }
     shop_content.innerHTML = new_element
 }
-showShop(select_option)
+updateShop(select_option)
 
 function calculate(eq,width){
     const dh = math.parse(eq)

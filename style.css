@@ -1,3 +1,8 @@
+#game-area{
+    width: fit-content;
+    margin: 10px auto;
+}
+
 #form{
     display: inline;
 }
@@ -41,13 +46,15 @@
 }
 
 #shop-content{
-    padding: 20px;
-    width: fit-content;
+    max-height: 70vh;
+    padding: 15px;
+    max-width: 80vw;
     margin: 0 auto;
+    overflow-y: auto;
 }
 
 .shop-list{
-    margin: 0px 12px;
+    margin: 10px 10px;
     display: inline-block;
 }
 
@@ -61,9 +68,20 @@
     width: 100%;
 }
 
-@media only screen and (min-width: 600px) {
-    #board{
-        float: right;
+#board{
+    position: absolute;
+    top: 10px;
+}
+
+#footer{
+    float: right;
+}
+@media only screen and (max-width: 600px) {
+    #footer{
+        margin-top: 20px;
+        float: none;
+        width: 100%;
+        text-align: center;
     }
 }
 

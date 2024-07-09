@@ -10,12 +10,17 @@
     <title>Algebra</title>
 </head>
 <body>
-    <div id="game-area"></div>
+    <div id="game-area">
+        <div id="board">
+            <span>point: <span id="point"></span></span>
+            <button onclick="showClosePanel()">buy</button>
+        </div>
+    </div>
     <form id="form" method="get">
         y = <input id="input" type="text" required/>
         <button id="shoot-btn">shoot</button>
     </form>
-    <div id="panel">
+    <div id="panel" class="hide">
         <button id="close" onclick="showClosePanel()">close</button>
         <div id="options">
             <button class="option select-option" onclick="option(this)">Player</button>
@@ -23,9 +28,8 @@
         </div>
         <div id="shop-content"></div>
     </div>
-    <div id="board">
-        <button id="buy" onclick="showClosePanel()">buy</button>
-        <span>point: <span id="point"></span></span>
+    <div id="footer">
+        Made with love by <a href="http://instagram.com/noosabaktee">Rama Nusa Bakti</a>
     </div>
     <script src="script.js"></script>
     <script>
