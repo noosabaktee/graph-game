@@ -54,8 +54,14 @@
 }
 
 .shop-list{
-    margin: 10px 10px;
+    margin: 10px 0;
+    width: 10%;
     display: inline-block;
+}
+
+.shop-list img{
+    display: block;
+    margin: 0 auto;
 }
 
 .shop-list span{
@@ -65,7 +71,9 @@
 }
 
 .shop-list button{
-    width: 100%;
+    display: block;
+    margin: 0 auto;
+    width: 80%;
 }
 
 #board{
@@ -76,6 +84,14 @@
 #footer{
     float: right;
 }
+
+@media only screen and (max-width: 900px) and (min-width: 600px) {
+    .shop-list{
+        width: 20%;
+    }
+    
+}
+
 @media only screen and (max-width: 600px) {
     #footer{
         margin-top: 20px;
@@ -83,5 +99,10 @@
         width: 100%;
         text-align: center;
     }
+
+    .shop-list{
+        width: 33%;
+    }
+    
 }
 

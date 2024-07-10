@@ -8,10 +8,16 @@ const size_enemy = 10/200
 const size_player = 10/64
 const step = 20
 
-const player_pos = [-2,-2]
-let enemy_pos = [[3.4,3],[5.2,5.2]]
-let start = player_pos[0]
-let end = enemy_pos[0][0]
+const border_x = Math.round(width/2/20-1)
+const border_y = Math.round(height/2/20-1)
+let player_pos = [] 
+let enemy_pos = []
+let start, end
+// player_pos = [-2,-5]
+// enemy_pos = [[3.3,3],[5.2,5.2]]
+// start = player_pos[0]
+// end = enemy_pos[0][0]
+
 let enemies = {} 
 let player
 let select_option = "Player"
@@ -20,7 +26,6 @@ let player_prices = {
     1: 2000, 2:2000, 3:2000, 4: 2000, 5:2000, 6:3000, 7:3000, 8:3000, 9:3500, 10:3500,
     11: 4000, 12:4000, 13:5000, 14: 5000, 15:5500, 16:6000, 17:7000, 18:8000, 19:9000, 20:10000,
 }
-
 let target_prices = {
     1:{price: 2000, increase: 20}, 
     2:{price: 2000, increase: 20}, 
@@ -61,7 +66,6 @@ let distance = 0
 let shoot = (arr,pos) => {}
 let restart = () => {}
 
-
 class Scene extends Phaser.Scene
 {
     preload ()
@@ -71,9 +75,11 @@ class Scene extends Phaser.Scene
             this.load.image(`fruit-${i}`, `img/fruit/${i}.svg`)
         }
     }
-
+    
     create ()
     {
+        updatePos()
+        updateShop(select_option)
         const graphics = this.add.graphics();
         // cartesian
         graphics.lineStyle(2, 0x0, 0.5);
@@ -83,6 +89,14 @@ class Scene extends Phaser.Scene
         graphics.lineTo(width, height/2);
         graphics.strokePath();
         graphics.closePath();
+
+        this.add.text(width/2-20, 0, border_y)
+        .setFont("bold 12px Arial")
+        .setColor('#000000');
+
+        this.add.text(width-15, height/2-20, border_x)
+        .setFont("bold 12px Arial")
+        .setColor('#000000');
 
         let player_select = localStorage.getItem('player_select')
         let target_select = localStorage.getItem('target_select')
@@ -109,19 +123,25 @@ class Scene extends Phaser.Scene
                 input.disabled = false
                 shoot_btn.disabled = false
                 this.scene.start()
+                input.focus()
             },1000)
         }
 
         shoot = (arr,pos) =>{        
+            try{
+                arr[pos+1][0]
+            }catch(e){
+                restart(1000)
+                return false
+            }
             let next = true
             distance = arr.length > 2 ? distance : 0
             let x1 = arr[pos][0]*step
             let y1 = arr[pos][1]*step
             let x2 = arr[pos+1][0]*step
             let y2 = arr[pos+1][1]*step
-            if(arr.length <= 3) arr.push([])
+            // if(arr.length <= 3) arr.push([])
             let [length,angle] = pytha(x1,y1,x2,y2)
-            length = x1 <= x2 ? length : -length;
             const coords = {x: (width/2)+x1,y: (height/2)+(y1)*(-1)+distance, len:0} 
             const tween = new TWEEN.Tween(coords, false) 
                 .to({x: (width/2)+x2, y: (height/2)+(y2)*(-1)+distance, len: length}, length) 
@@ -147,8 +167,7 @@ class Scene extends Phaser.Scene
                                 .setColor('#000000');
                         }
                     }
-                    if((math.abs(this.bullet.x-width/2) > width/2 || math.abs(this.bullet.y-height/2) > height/2) ||
-                        (pos+1 >= arr.length)){
+                    if((math.abs(this.bullet.x-width/2) > width/2 || math.abs(this.bullet.y-height/2) > height/2)){
                         next = false
                         restart(1000)
                         return false
@@ -230,12 +249,38 @@ let select =  (i) => {
     updateShop(select_option)
 }
 
+let updatePos = () => {
+    if(!enemy_pos.every(element => element === null)) return false
+    // player position
+    let plusOrMinus = Math.random() < 0.5 ? -1 : 1;
+    let player_x = Math.round((Math.random() * border_x)) * plusOrMinus 
+    let player_y = Math.round((Math.random() * border_y)) * plusOrMinus 
+    player_pos = [player_x,player_y]
+    // enemy position
+    let total = Math.round(Math.random() * 2 + 1)
+    enemy_pos = []
+    for(let i = 1;i<=total;i++){
+        let leftOrRight = player_x > 0 ? -1 : 1
+        plusOrMinus = Math.random() < 0.5 ? -1 : 1;
+        let enemy_x = Math.round((Math.random() * border_x)) * leftOrRight
+        let enemy_y = Math.round((Math.random() * border_y)) * plusOrMinus
+        enemy_x = enemy_x == 0 ? 1 : enemy_x
+        enemy_y = enemy_y == 0 ? 1 : enemy_y
+        enemy_pos.push([enemy_x,enemy_y])
+    }
+    // update start & end
+    start = player_pos[0]
+    end = enemy_pos[0][0]
+}
+
 let updatePoint = () => {
+    if(!enemy_pos.every(element => element === null)) return false
     let last_point = localStorage.getItem("point")
     let target_select = localStorage.getItem("target_select")
     let new_point = parseInt(last_point)+target_prices[target_select].increase
     localStorage.setItem("point",new_point)
     point.innerHTML = new_point
+    updatePos()
 }
 
 let option = (el) => {
@@ -254,7 +299,7 @@ let updateShop = (option) => {
     let target_unlocked = localStorage.getItem("target_unlocked")
     for(let i = 1;i<=20;i++){
         new_element += `<div class="shop-list">`
-        new_element += `<img src="img/${dir}/${i}.svg" width="${size}"/><br>`
+        new_element += `<img src="img/${dir}/${i}.svg" width="${size}"/>`
         if(option == 'Player') {
             new_element += `<span>price: ${player_prices[i]}</span><br>`
         }else {
@@ -271,11 +316,9 @@ let updateShop = (option) => {
             new_element += `<button onclick="buy(${i})">buy</button>`
         }
         new_element += '</div>'
-        if(i == 10) new_element += '<br><br>'
     }
     shop_content.innerHTML = new_element
 }
-updateShop(select_option)
 
 function calculate(eq,width){
     const dh = math.parse(eq)
@@ -283,7 +326,7 @@ function calculate(eq,width){
     let i=start;
     while(math.abs(i)<width/2){
         const res = dh.evaluate({ x: i })
-        if(res == Infinity) break; y.push([i,res])
+        if(res == Infinity || res == NaN) break; y.push([i,res])
         if(start < end){
             i+=0.5;
         }else{
