@@ -201,7 +201,6 @@ form.addEventListener("submit", (e) => {
     try{
         const res = calculate(val,width)
         res.unshift([player_pos[0],player_pos[1]])
-        console.log(res)
         distance = math.abs(player_pos[1]*step - res[1][1]*step)
         distance = res[1][1] > player_pos[1] ? distance : -distance
         input.disabled = true
