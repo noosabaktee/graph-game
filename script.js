@@ -1,7 +1,9 @@
-let width = window.innerWidth - 50
-let height = window.innerHeight - 50
+let width = window.innerWidth - 35
+let height = window.innerHeight - 35
 if(width <= height){
     height = width
+}else{
+    height -= 30
 }
 const size_bullet = 10
 const size_enemy = 10/200
@@ -13,8 +15,8 @@ const border_y = Math.round(height/2/20-1)
 let player_pos = [] 
 let enemy_pos = []
 let start, end
-// player_pos = [-2,-5]
-// enemy_pos = [[3.3,3],[5.2,5.2]]
+// player_pos = [30,9]
+// enemy_pos = [[-3.3,3],[-5.2,5.2]]
 // start = player_pos[0]
 // end = enemy_pos[0][0]
 
@@ -90,12 +92,13 @@ class Scene extends Phaser.Scene
         graphics.strokePath();
         graphics.closePath();
 
-        this.add.text(width/2-20, 0, border_y)
-        .setFont("bold 12px Arial")
+        let space = (border_y).toString().length == 1 ? 10 : 20;
+        this.add.text(width/2-space, 0, border_y)
+        .setFont("bold 15px Arial")
         .setColor('#000000');
 
-        this.add.text(width-15, height/2-20, border_x)
-        .setFont("bold 12px Arial")
+        this.add.text(width-space, height/2-20, border_x)
+        .setFont("bold 15px Arial")
         .setColor('#000000');
 
         let player_select = localStorage.getItem('player_select')
@@ -154,10 +157,10 @@ class Scene extends Phaser.Scene
                     this.bullet.x = c.x
                     this.bullet.y = c.y
                     for (const [key, enemy] of Object.entries(enemies)) {
-                        if((this.bullet.x + this.bullet.scaleX+(size_bullet/2+2) >= enemy.x &&
-                            this.bullet.x <= enemy.x + enemy.scaleX+(size_bullet/2+2)) && 
-                            (this.bullet.y + this.bullet.scaleY+(size_bullet/2+2) >= enemy.y &&
-                            this.bullet.y <= enemy.y + enemy.scaleY+(size_bullet/2+2)) &&
+                        if((this.bullet.x + this.bullet.scaleX+(size_bullet/2+3) >= enemy.x &&
+                            this.bullet.x <= enemy.x + enemy.scaleX+(size_bullet/2+3)) && 
+                            (this.bullet.y + this.bullet.scaleY+(size_bullet/2+3) >= enemy.y &&
+                            this.bullet.y <= enemy.y + enemy.scaleY+(size_bullet/2+3)) &&
                             (enemy.scene != undefined)){       
                                 enemy_pos[key] = null 
                                 enemy.destroy()
@@ -192,19 +195,20 @@ form.addEventListener("submit", (e) => {
     e.preventDefault()
     const val = input.value
     if(!val.includes("x")){
-        console.log("harus mengandung x")
+        showToast("Equation must includes x")
         return false
     }
     try{
         const res = calculate(val,width)
         res.unshift([player_pos[0],player_pos[1]])
+        console.log(res)
         distance = math.abs(player_pos[1]*step - res[1][1]*step)
         distance = res[1][1] > player_pos[1] ? distance : -distance
         input.disabled = true
         shoot_btn.disabled = true
         shoot(res,1)
     }catch(err){
-        console.log(err)
+        showToast("Your equation is wrong")
     }
 })
 
@@ -219,7 +223,7 @@ let buy = (i) => {
             point -= player_prices[i]
             localStorage.setItem("point", point)
         }else{
-            console.log("Point is not enough")
+            showToast("Point is not enough")
         }
     }else if(select_option == "Target"){
         let target_unlocked = localStorage.getItem("target_unlocked")
@@ -230,7 +234,7 @@ let buy = (i) => {
             point -= target_prices[i].price
             localStorage.setItem("point", point)
         }else{
-            console.log("Point is not enough")
+            showToast("Point is not enough")
         }
     }
     updateShop(select_option)
@@ -301,10 +305,10 @@ let updateShop = (option) => {
         new_element += `<div class="shop-list">`
         new_element += `<img src="img/${dir}/${i}.svg" width="${size}"/>`
         if(option == 'Player') {
-            new_element += `<span>price: ${player_prices[i]}</span><br>`
+            new_element += `<span class="price">Price: ${player_prices[i]}</span><br>`
         }else {
-            new_element += `<span>price: ${target_prices[i].price}</span><br>`
-            new_element += `<span>+${target_prices[i].increase} point</span><br>`      
+            new_element += `<span class="price">Price: ${target_prices[i].price}</span><br>`
+            new_element += `<span><b>+${target_prices[i].increase}</b> point</span><br>`      
         } 
         if(option == 'Player' && player_unlocked.includes(i)){
             let info = localStorage.getItem("player_select") == i ? "selected" : "select"
@@ -320,32 +324,42 @@ let updateShop = (option) => {
     shop_content.innerHTML = new_element
 }
 
-function calculate(eq,width){
+
+let calculate = (eq,width) => {
     const dh = math.parse(eq)
     let y = []
     let i=start;
     while(math.abs(i)<width/2){
         const res = dh.evaluate({ x: i })
         if(res == Infinity || res == NaN) break; y.push([i,res])
-        if(start < end){
+            if(start < end){
             i+=0.5;
         }else{
             i-=0.5;
         }
-        if(math.abs(res)*step > width && y.length >= 2){
+        if(math.abs(res)*step > width && y.length >= 3){
             break;
         }
     }
     return y
 }
 
-function pytha(x1,y1,x2,y2){
+let pytha = (x1,y1,x2,y2) => {
     let x = math.abs(x2-x1)
     let y = math.abs(y2-y1)
     let r = math.sqrt(x**2 + y**2)
     let angle = math.asin(y/r)*(180/math.pi)
     return [r,angle]
 }
+
+let showToast = (text) => {
+    var x = document.getElementById("snackbar");
+    x.innerHTML = text
+    x.className = "show";
+    setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+}
+function showCloseShop(){document.getElementById('shop').classList.toggle('hide')}
+function showCloseInfo(){document.getElementById('info').classList.toggle('hide')}
 
 const config = {
     type: Phaser.AUTO,

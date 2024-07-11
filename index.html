@@ -6,34 +6,56 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.80.1/phaser.min.js" integrity="sha512-zQK11u7QyhUWLmhK+Kyn4Oac0n2d5+AcuEiCagfm2YrGa2wMrdbj5EJammEmGU7bGnckmRoNTUT29Dl+DaRSlg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/13.0.0/math.min.js" integrity="sha512-zP2Tr3WTE4wF7MonahLvKKSPvokSGmFOT3xRHFaoGi9q8Ydlsn9IrFAzoCJ8aETtE7h4/ZJckvrirY8jS+m6XQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/20.0.0/tween.umd.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="toast.css">
     <title>Algebra</title>
 </head>
 <body>
-    <div id="game-area">
-        <div id="board">
-            <span>point: <span id="point"></span></span>
-            <button onclick="showClosePanel()">buy</button>
+    <div id="content">
+        <div id="snackbar"></div>
+        <div id="game-area">
+            <div id="board">
+                <span>Point: <span id="point"></span></span>
+                <button onclick="showCloseShop()">
+                    <span class="material-symbols-outlined">store</span>
+                </button>
+            </div>
         </div>
-    </div>
-    <form id="form" method="get">
-        y = <input id="input" type="text" required/>
-        <button id="shoot-btn">shoot</button>
-    </form>
-    <div id="panel" class="hide">
-        <button id="close" onclick="showClosePanel()">close</button>
-        <div id="options">
-            <button class="option select-option" onclick="option(this)">Player</button>
-            <button class="option" onclick="option(this)">Target</button>
+        <div id="shop" class="hide">
+            <button id="close" onclick="showCloseShop()">
+                <span class="material-symbols-outlined">disabled_by_default</span>
+            </button>
+            <div id="options">
+                <button class="option select-option" onclick="option(this)">Player</button>
+                <button class="option" onclick="option(this)">Target</button>
+            </div>
+            <div id="shop-content"></div>
         </div>
-        <div id="shop-content"></div>
-    </div>
-    <div id="footer">
-        Made with love by <a href="http://instagram.com/noosabaktee" target="_blank">Rama Nusa Bakti</a>
+        <div id="info" class="hide">
+            <button id="close" onclick="showCloseInfo()">
+                <span class="material-symbols-outlined">disabled_by_default</span>
+            </button>
+           <div id="info-content">
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iusto, totam ab rem amet obcaecati ipsum eum, tenetur voluptatibus, cum quam doloribus rerum at aliquid quod doloremque qui esse tempora? Quas?
+           </div>
+        </div>
+        <div>
+            <form id="form" method="get">
+                <b style="font-size: 20px;">y = </b><input id="input" type="text" required placeholder="write your equation here"/>
+                <button id="shoot-btn">shoot</button>
+            </form>
+            <button id="info-btn" onclick="showCloseInfo()">
+                <span class="material-symbols-outlined">info</span>
+            </button>
+            <div id="footer">
+                Made with <span class="material-symbols-outlined" style="font-size: 20px;color: red;">favorite</span> by <a href="http://instagram.com/noosabaktee" target="_blank">Rama Nusa Bakti</a>
+            </div>
+        </div>
     </div>
     <script src="script.js"></script>
-    <script>
-        function showClosePanel(el){document.getElementById('panel').classList.toggle('hide')}
-    </script>
 </body>
 </html>

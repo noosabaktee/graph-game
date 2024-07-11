@@ -1,13 +1,46 @@
+html{
+    background-color: #bdb3db;
+}
+
+*{
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+b{
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+    font-style: normal;
+}
+
+#content{
+    position: absolute;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+  
+
 #game-area{
     width: fit-content;
-    margin: 10px auto;
+    margin: 0 auto;
 }
 
 #form{
     display: inline;
 }
 
-#panel{
+input{
+    border-radius: 5px;
+    border: none;
+    height: 28px;
+    width: 12rem;
+}
+
+#shop, #info{
     margin: 0;
     width: 80%;
     position: absolute;
@@ -15,14 +48,17 @@
     left: 50%;
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
-    background-color: #8b6969;
+    background-color: #bdb3db;
     border-radius: 10px;
+    border: 2px solid black;
 }
 
-#panel #close{
+#close{
     position: absolute;
-    right: -20px;
+    right: -10px;
     top: -10px;
+    background-color: none;
+    padding: 0;
 }
 
 .hide{
@@ -33,7 +69,7 @@
     display: flex;
 }
 
-#panel .option{
+#shop .option{
     width: 50%;
     display: inline;
     border: none;
@@ -42,10 +78,10 @@
 }
 
 .select-option{
-    background-color: #8b6969;
+    background-color: #bdb3db;
 }
 
-#shop-content{
+#shop-content, #info-content{
     max-height: 70vh;
     padding: 15px;
     max-width: 80vw;
@@ -72,17 +108,47 @@
 
 .shop-list button{
     display: block;
-    margin: 0 auto;
+    margin: 10px auto;
     width: 80%;
+}
+
+.shop-list .price{
+    margin: 2px 0;
 }
 
 #board{
     position: absolute;
-    top: 10px;
+    margin-left: 10px;
+}
+
+#info-btn{
+    background-color: transparent;
+}
+
+#shoot-btn{
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 #footer{
     float: right;
+}
+
+
+span{
+    vertical-align: middle;
+}
+
+button{
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.material-symbols-outlined{
+    font-size: 32px;
 }
 
 @media only screen and (max-width: 900px) and (min-width: 600px) {
@@ -103,6 +169,16 @@
     .shop-list{
         width: 33%;
     }
+
+    #board button .material-symbols-outlined{
+        font-size: 24px;
+        margin-left: -5px;
+    }
+
+    #board span{
+        font-size: 12px;
+    }
+
     
 }
 
