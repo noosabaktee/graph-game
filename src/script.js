@@ -143,6 +143,10 @@ class Scene extends Phaser.Scene
             let y1 = arr[pos][1]*step
             let x2 = arr[pos+1][0]*step
             let y2 = arr[pos+1][1]*step
+            if(isNaN(y2)){
+                restart(1000)
+                return false
+            }
             // if(arr.length <= 3) arr.push([])
             let [length,angle] = pytha(x1,y1,x2,y2)
             const coords = {x: (width/2)+x1,y: (height/2)+(y1)*(-1)+distance, len:0} 
@@ -193,14 +197,15 @@ class Scene extends Phaser.Scene
 
 form.addEventListener("submit", (e) => {
     e.preventDefault()
-    const val = input.value
-    if(!val.includes("x")){
-        showToast("Equation must includes x")
-        return false
-    }
+    let val = input.value
+    // if(!val.includes("x")){
+    //     showToast("Equation must includes x")
+    //     return false
+    // }
     try{
-        const res = calculate(val,width)
+        const res = calculate(val.toLowerCase(),width)
         res.unshift([player_pos[0],player_pos[1]])
+        console.log(res)
         distance = math.abs(player_pos[1]*step - res[1][1]*step)
         distance = res[1][1] > player_pos[1] ? distance : -distance
         input.disabled = true

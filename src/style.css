@@ -8,7 +8,7 @@ html{
     font-style: normal;
 }
 
-b{
+b,h3{
     font-family: "Poppins", sans-serif;
     font-weight: 600;
     font-style: normal;
@@ -37,7 +37,7 @@ input{
     border-radius: 5px;
     border: none;
     height: 28px;
-    width: 12rem;
+    width: 17.5rem;
 }
 
 #shop, #info{
@@ -149,6 +149,7 @@ button{
 
 .material-symbols-outlined{
     font-size: 32px;
+    background-color: transparent;
 }
 
 @media only screen and (max-width: 900px) and (min-width: 600px) {
