@@ -23,7 +23,7 @@
         <div id="snackbar"></div>
         <div id="game-area">
             <div id="board">
-                <span>Point: <span id="point"></span></span>
+                <span>Points: <span id="point"></span></span>
                 <button onclick="showCloseShop()"  style="background-color: transparent;">
                     <span class="material-symbols-outlined">store</span>
                 </button>
@@ -46,42 +46,44 @@
            <div id="info-content">
                 <span style="font-size: 24px;display: block;text-align: center;"><b>G-raph</b></span>
                 <ol>
-                    <li>G-raph is a math game that challenges you to create a graph that is used to shoot targets</li>
-                    <li>You can write equations to draw graphs</li>
-                    <li>Points will increase when you successfully shoot all targets</li>
+                    <li><b>G-raph</b> is a math game that challenges you to create a graph that is used to shot the targets</li>
+                    <li>You can write <b>functions</b> to draw a graph</li>
+                    <li>Points will <b>increase</b> when you successfully shoot all targets</li>
                     <li>
-                        Functions that can be used to create equations: <br>
-                        Variables: x
+                        Functions syntax<br>
+                        <b>Variables</b>: x
                         <br>
-                        Operators: +,-,/,*,^
+                        <b>Operators</b>: +,-,/,*,^
                         <br>
-                        Functions:
-                        sqrt(),
-                        log(),
-                        ln(),
-                        abs(),
-                        sin(),
-                        cos(),
-                        tan(),
-                        exp()
-
+                        <b>Functions</b>:
+                        sqrt(x),
+                        log(x, base),
+                        abs(x),
+                        sin(x),
+                        cos(x),
+                        tan(x),
+                        exp(x)
+                        <br>
+                        Example: <b>sin(x)</b><br>
+                        <img src="img/sin.gif" alt="sin(x)" style="width: 90%;">                        
                     </li>
-                    <li>The translation of the function have some confusing consequences. First, any constant added to your function is irrelevant to the result. For example, the functions y = 2*x + 3, y = 2*x - 8 and y = 2*x yield the exact same graph in the game.</li>
-                    <li>Using lots of parentheses is recommended to avoid misinterpretation, for example y = 1/x+2 is going to be understood as (1/x) + 2, you should use 1/(x+2).</li>
-                    <li>You can give players and targets for you to use</li>
+                    <li>If the shot is <b>out of bounds</b>, it will be restarted</li>
+                    <li>The <b>translation</b> of the function have some confusing consequences. First, any constant added to your function is irrelevant to the result. For example, the functions <b>y = 2*x + 3, y = 2*x - 8</b> and <b>y = 2*x</b> yield the exact same graph in the game.</li>
+                    <li>Using lots of parentheses is recommended to avoid misinterpretation, for example <b>y = 1/x+2</b> is going to be understood as <b>(1/x) + 2</b>, you should use <b>1/(x+2)</b>.</li>
+                    <li>You can <b>purchase</b> players and targets for your use</li>
                 </ol>
            </div>
         </div>
         <div>
             <form id="form" method="get">
-                <b style="font-size: 20px;">y = </b><input id="input" type="text" required placeholder="write your equation here"/>
+                <b style="font-size: 20px;">y = </b><input id="input" type="text" required placeholder="write your function here"/>
                 <button id="shoot-btn">shoot</button>
             </form>
             <button id="info-btn" onclick="showCloseInfo()">
                 <span class="material-symbols-outlined">info</span>
             </button>
             <div id="footer">
-                Made with <span class="material-symbols-outlined" style="font-size: 20px;color: red;">favorite</span> by <a href="http://instagram.com/noosabaktee" target="_blank">Rama Nusa Bakti</a>
+                Made with <span class="material-symbols-outlined" style="font-size: 20px;color: red;">favorite</span> by <a href="http://instagram.com/noosabaktee" target="_blank" style="text-decoration: none;"><b>Rama Nusa Bakti</b></a>
             </div>
         </div>
     </div>

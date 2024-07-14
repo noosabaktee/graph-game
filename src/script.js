@@ -25,11 +25,11 @@ let player
 let select_option = "Player"
 
 let player_prices = {
-    1: 2000, 2:2000, 3:2000, 4: 2000, 5:2000, 6:3000, 7:3000, 8:3000, 9:3500, 10:3500,
+    1: 0, 2:2000, 3:2000, 4: 2000, 5:2000, 6:3000, 7:3000, 8:3000, 9:3500, 10:3500,
     11: 4000, 12:4000, 13:5000, 14: 5000, 15:5500, 16:6000, 17:7000, 18:8000, 19:9000, 20:10000,
 }
 let target_prices = {
-    1:{price: 2000, increase: 20}, 
+    1:{price: 0, increase: 20}, 
     2:{price: 2000, increase: 20}, 
     3:{price: 2000, increase: 20}, 
     4:{price: 3000, increase: 30}, 
@@ -143,7 +143,7 @@ class Scene extends Phaser.Scene
             let y1 = arr[pos][1]*step
             let x2 = arr[pos+1][0]*step
             let y2 = arr[pos+1][1]*step
-            if(isNaN(y2)){
+            if(isNaN(y2) || !isFinite(y2)){
                 restart(1000)
                 return false
             }
@@ -311,7 +311,7 @@ let updateShop = (option) => {
             new_element += `<span class="price">Price: ${player_prices[i]}</span><br>`
         }else {
             new_element += `<span class="price">Price: ${target_prices[i].price}</span><br>`
-            new_element += `<span><b>+${target_prices[i].increase}</b> point</span><br>`      
+            new_element += `<span><b>+${target_prices[i].increase}</b> points</span><br>`      
         } 
         if(option == 'Player' && player_unlocked.includes(i)){
             let info = localStorage.getItem("player_select") == i ? "disabled" : "enabled"
