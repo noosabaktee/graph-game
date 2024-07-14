@@ -149,7 +149,6 @@ button{
 
 .material-symbols-outlined{
     font-size: 32px;
-    background-color: transparent;
 }
 
 @media only screen and (max-width: 900px) and (min-width: 600px) {

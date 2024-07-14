@@ -205,7 +205,6 @@ form.addEventListener("submit", (e) => {
     try{
         const res = calculate(val.toLowerCase(),width)
         res.unshift([player_pos[0],player_pos[1]])
-        console.log(res)
         distance = math.abs(player_pos[1]*step - res[1][1]*step)
         distance = res[1][1] > player_pos[1] ? distance : -distance
         input.disabled = true
@@ -227,7 +226,7 @@ let buy = (i) => {
             point -= player_prices[i]
             localStorage.setItem("point", point)
         }else{
-            showToast("Point is not enough")
+            showToast("Points are not enough")
         }
     }else if(select_option == "Target"){
         let target_unlocked = localStorage.getItem("target_unlocked")
@@ -238,7 +237,7 @@ let buy = (i) => {
             point -= target_prices[i].price
             localStorage.setItem("point", point)
         }else{
-            showToast("Point is not enough")
+            showToast("Points are not enough")
         }
     }
     updateShop(select_option)
@@ -315,11 +314,11 @@ let updateShop = (option) => {
             new_element += `<span><b>+${target_prices[i].increase}</b> point</span><br>`      
         } 
         if(option == 'Player' && player_unlocked.includes(i)){
-            let info = localStorage.getItem("player_select") == i ? "selected" : "select"
-            new_element += `<button onclick="select(${i})">${info}</button>`
+            let info = localStorage.getItem("player_select") == i ? "disabled" : "enabled"
+            new_element += `<button onclick="select(${i})" ${info}>select</button>`
         }else if(option == 'Target' && target_unlocked.includes(i)){
-            let info = localStorage.getItem("target_select") == i ? "selected" : "select"
-            new_element += `<button onclick="select(${i})">${info}</button>`
+            let info = localStorage.getItem("target_select") == i ? "disabled" : "enabled"
+            new_element += `<button onclick="select(${i})" ${info}>select</button>`
         }else{
             new_element += `<button onclick="buy(${i})">buy</button>`
         }
