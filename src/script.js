@@ -15,40 +15,37 @@ const border_y = Math.round(height/2/20-1)
 let player_pos = [] 
 let enemy_pos = []
 let start, end
-// player_pos = [30,9]
-// enemy_pos = [[-3.3,3],[-5.2,5.2]]
-// start = player_pos[0]
-// end = enemy_pos[0][0]
 
 let enemies = {} 
 let player
 let select_option = "Player"
+const words = ["Hit!","Shoot!","Perfect!!","Smashed!","Boom!","Easy!!"]
 
 let player_prices = {
-    1: 0, 2:2000, 3:2000, 4: 2000, 5:2000, 6:3000, 7:3000, 8:3000, 9:3500, 10:3500,
+    1: 0, 2:1000, 3:1000, 4: 2000, 5:2000, 6:2500, 7:3000, 8:3000, 9:3500, 10:3500,
     11: 4000, 12:4000, 13:5000, 14: 5000, 15:5500, 16:6000, 17:7000, 18:8000, 19:9000, 20:10000,
 }
 let target_prices = {
     1:{price: 0, increase: 20}, 
-    2:{price: 2000, increase: 20}, 
-    3:{price: 2000, increase: 20}, 
-    4:{price: 3000, increase: 30}, 
-    5:{price: 3000, increase: 30}, 
-    6:{price: 3500, increase: 40}, 
-    7:{price: 3500, increase: 40}, 
-    8:{price: 3500, increase: 40}, 
-    9:{price: 4500, increase: 50}, 
+    2:{price: 1000, increase: 20}, 
+    3:{price: 1000, increase: 20}, 
+    4:{price: 2500, increase: 30}, 
+    5:{price: 2500, increase: 30}, 
+    6:{price: 3000, increase: 40}, 
+    7:{price: 3000, increase: 40}, 
+    8:{price: 3000, increase: 40}, 
+    9:{price: 4000, increase: 50}, 
     10:{price: 5000, increase: 65},
     11:{price: 5000, increase: 65}, 
-    12:{price: 6500, increase: 80}, 
-    13:{price: 8000, increase: 80}, 
-    14:{price: 10000, increase: 95}, 
-    15:{price: 14000, increase: 100}, 
-    16:{price: 16000, increase: 120}, 
-    17:{price: 17500, increase: 135}, 
-    18:{price: 19000, increase: 150}, 
-    19:{price: 21000, increase: 180}, 
-    20:{price: 25000, increase: 200},
+    12:{price: 6500, increase: 75}, 
+    13:{price: 7000, increase: 80}, 
+    14:{price: 7500, increase: 95}, 
+    15:{price: 8000, increase: 100}, 
+    16:{price: 9000, increase: 120}, 
+    17:{price: 9500, increase: 135}, 
+    18:{price: 95000, increase: 150}, 
+    19:{price: 10000, increase: 180}, 
+    20:{price: 12000, increase: 200},
 }
 
 const input = document.getElementById("input")
@@ -147,7 +144,6 @@ class Scene extends Phaser.Scene
                 restart(1000)
                 return false
             }
-            // if(arr.length <= 3) arr.push([])
             let [length,angle] = pytha(x1,y1,x2,y2)
             const coords = {x: (width/2)+x1,y: (height/2)+(y1)*(-1)+distance, len:0} 
             const tween = new TWEEN.Tween(coords, false) 
@@ -169,7 +165,7 @@ class Scene extends Phaser.Scene
                                 enemy_pos[key] = null 
                                 enemy.destroy()
                                 updatePoint()
-                                this.add.text(enemy.x, enemy.y, "Damn!!")
+                                this.add.text(enemy.x, enemy.y, words[Math.round(Math.random() * 5)])
                                 .setFont("15px Arial")
                                 .setColor('#000000');
                         }
@@ -198,10 +194,6 @@ class Scene extends Phaser.Scene
 form.addEventListener("submit", (e) => {
     e.preventDefault()
     let val = input.value
-    // if(!val.includes("x")){
-    //     showToast("Equation must includes x")
-    //     return false
-    // }
     try{
         const res = calculate(val.toLowerCase(),width)
         res.unshift([player_pos[0],player_pos[1]])
@@ -211,7 +203,7 @@ form.addEventListener("submit", (e) => {
         shoot_btn.disabled = true
         shoot(res,1)
     }catch(err){
-        showToast("Your equation is wrong")
+        showToast("Your function is wrong")
     }
 })
 
