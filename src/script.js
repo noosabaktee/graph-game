@@ -140,7 +140,7 @@ class Scene extends Phaser.Scene
             let y1 = arr[pos][1]*step
             let x2 = arr[pos+1][0]*step
             let y2 = arr[pos+1][1]*step
-            if(isNaN(y2) || !isFinite(y2)){
+            if(isNaN(y2) || !isFinite(y2) || isNaN(y1) || !isFinite(y1)){
                 restart(1000)
                 return false
             }
