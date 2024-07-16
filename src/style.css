@@ -151,14 +151,14 @@ button{
     font-size: 32px;
 }
 
-@media only screen and (max-width: 900px) and (min-width: 600px) {
+@media only screen and (max-width: 900px) and (min-width: 500px) {
     .shop-list{
         width: 20%;
     }
     
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 500px) {
     #footer{
         margin-top: 20px;
         float: none;

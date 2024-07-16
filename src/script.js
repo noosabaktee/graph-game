@@ -5,13 +5,19 @@ if(width <= height){
 }else{
     height -= 30
 }
-const size_bullet = 10
-const size_enemy = 10/200
-const size_player = 10/64
-const step = 20
+let size_bullet = 10
+let size_enemy = 10/200
+let size_player = 10/64
+let step = 20
+if(window.innerWidth <= 500){
+    step /= 2
+    size_bullet /= 2
+    size_enemy /= 1.2
+    size_player /= 1.5
+}
 
-const border_x = Math.round(width/2/20-1)
-const border_y = Math.round(height/2/20-1)
+const border_x = Math.round(width/2/step-1)
+const border_y = Math.round(height/2/step-1)
 let player_pos = [] 
 let enemy_pos = []
 let start, end
@@ -27,8 +33,8 @@ let player_prices = {
 }
 let target_prices = {
     1:{price: 0, increase: 20}, 
-    2:{price: 1000, increase: 20}, 
-    3:{price: 1000, increase: 20}, 
+    2:{price: 1000, increase: 25}, 
+    3:{price: 1000, increase: 25}, 
     4:{price: 2500, increase: 30}, 
     5:{price: 2500, increase: 30}, 
     6:{price: 3000, increase: 40}, 
